@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}管理后台 - {{ config.APP_NAME }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-sidebar {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .admin-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .code-editor {
+        font-family: 'Courier New', monospace;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    .help-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    .config-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+    }
+    .config-section h5 {
+        color: #495057;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="admin-sidebar">
+            <h5 class="mb-3">管理菜单</h5>
+            <div class="nav flex-column nav-pills">
+                <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">网站配置</a>
+                <a class="nav-link" href="{{ url_for('admin_logout') }}">退出登录</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="admin-content">
+            <h4 class="mb-4">网站配置</h4>
+            
+            {% if success_message %}
+            <div class="alert alert-success">{{ success_message }}</div>
+            {% endif %}
+            
+            <!-- 配置标签页 -->
+            <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab" aria-controls="basic" aria-selected="true">
+                        <i class="bi bi-gear"></i> 基本设置
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="html-tab" data-bs-toggle="tab" data-bs-target="#html" type="button" role="tab" aria-controls="html" aria-selected="false">
+                        <i class="bi bi-code-slash"></i> 自定义HTML
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ads-tab" data-bs-toggle="tab" data-bs-target="#ads" type="button" role="tab" aria-controls="ads" aria-selected="false">
+                        <i class="bi bi-badge-ad"></i> 广告管理
+                    </button>
+                </li>
+            </ul>
+            
+            <form id="config-form" method="post" action="{{ url_for('admin_save_config') }}">
+                <div class="tab-content" id="configTabsContent">
+                    <!-- 基本设置标签页 -->
+                    <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
+                        <div class="config-section">
+                            <h5><i class="bi bi-info-circle"></i> 网站基本信息</h5>
+                <div class="mb-3">
+                    <label for="title" class="form-label">网站标题</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ site_config.title }}">
+                                <div class="help-text">显示在浏览器标题栏和导航栏的网站名称</div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">网站描述</label>
+                    <textarea class="form-control" id="description" name="description" rows="3">{{ site_config.description }}</textarea>
+                                <div class="help-text">用于SEO优化的网站描述信息</div>
+                </div>
+                <div class="mb-3">
+                    <label for="keywords" class="form-label">关键词（SEO用，用逗号分隔）</label>
+                    <input type="text" class="form-control" id="keywords" name="keywords" value="{{ site_config.keywords }}">
+                                <div class="help-text">搜索引擎优化关键词，多个关键词用逗号分隔</div>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h5><i class="bi bi-shield-check"></i> 法律信息</h5>
+                            <div class="mb-3">
+                                <label for="copyright" class="form-label">版权信息</label>
+                                <input type="text" class="form-control" id="copyright" name="copyright" value="{{ site_config.copyright }}">
+                                <div class="help-text">显示在页面底部的版权声明</div>
+                </div>
+                <div class="mb-3">
+                    <label for="beian" class="form-label">备案号</label>
+                    <input type="text" class="form-control" id="beian" name="beian" value="{{ site_config.beian }}">
+                                <div class="help-text">ICP备案号，如有请填写</div>
+                </div>
+                <div class="mb-3">
+                    <label for="contact_email" class="form-label">联系邮箱</label>
+                    <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ site_config.contact_email }}">
+                                <div class="help-text">网站管理员联系邮箱</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 自定义HTML标签页 -->
+                    <div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
+                        <div class="config-section">
+                            <h5><i class="bi bi-toggles"></i> 功能开关</h5>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="html_enabled" name="html_enabled" 
+                                           {% if site_config.custom_html.enabled %}checked{% endif %}>
+                                    <label class="form-check-label" for="html_enabled">
+                                        启用自定义HTML代码
+                                    </label>
+                                </div>
+                                <div class="help-text">关闭此选项将禁用所有自定义HTML代码的输出</div>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h5><i class="bi bi-bar-chart"></i> 51LA统计功能</h5>
+                            <div class="mb-3">
+                                <label for="la51_code" class="form-label">51LA统计代码（后台统计）</label>
+                                <textarea class="form-control code-editor" id="la51_code" name="la51_code" rows="4" placeholder='请粘贴51LA提供的统计代码，例如：
+<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({id:"你的统计ID",ck:"你的统计ID"})</script>'>{{ site_config.custom_html.la51_code }}</textarea>
+                                <div class="help-text">
+                                    <span class="text-info">📊 此代码用于后台数据统计，不会在前台显示</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="footer_code" class="form-label">51LA挂载信息（前台显示）</label>
+                                <textarea class="form-control code-editor" id="footer_code" name="footer_code" rows="4" placeholder='请粘贴51LA提供的挂载信息代码，例如：
+<script id="LA-DATA-WIDGET" crossorigin="anonymous" charset="UTF-8" src="https://v6-widget.51.la/v6/你的统计ID/quote.js?theme=0&f=12&display=0,1,1,1,1,1,1,1"></script>'>{{ site_config.custom_html.footer_code }}</textarea>
+                                <div class="help-text">
+                                    <span class="text-success">🎯 此代码用于在网站前台显示访问统计信息</span><br>
+                                    <strong>参数说明：</strong>theme=0(主题), f=12(字体大小), display=显示项目设置
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-primary">
+                                <h6><i class="bi bi-info-circle"></i> 51LA功能说明</h6>
+                                <ul class="mb-0 small">
+                                    <li><strong>统计代码：</strong>用于收集访问数据，在51LA后台查看详细统计</li>
+                                    <li><strong>挂载信息：</strong>在网站前台显示访问量、在线人数等信息</li>
+                                    <li><strong>显示位置：</strong>挂载信息将显示在页面底部，版权信息上方</li>
+                                    <li><strong>样式优化：</strong>系统已自动优化显示样式，无需额外设置</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h5><i class="bi bi-file-earmark-code"></i> 高级自定义代码</h5>
+                            <div class="mb-3">
+                                <label for="head_code" class="form-label">页面头部代码（&lt;head&gt;区域）</label>
+                                <textarea class="form-control code-editor" id="head_code" name="head_code" rows="8" placeholder='在此输入需要插入到<head>标签内的代码，例如：
+<meta name="custom-meta" content="value">
+<link rel="stylesheet" href="custom.css">
+<script>
+// 自定义JavaScript代码
+</script>'>{{ site_config.custom_html.head_code }}</textarea>
+                                <div class="help-text">这些代码将插入到页面的 &lt;head&gt; 标签内，适合放置CSS样式、meta标签、第三方脚本等</div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-exclamation-triangle"></i> 高级功能说明</h6>
+                                <p class="mb-0 small">
+                                    此区域用于添加其他第三方服务代码，如客服插件、广告代码等。
+                                    51LA相关代码请使用上方专用配置区域。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> 使用说明</h6>
+                            <ul class="mb-0">
+                                <li><strong>安全提醒：</strong>请确保您输入的代码来源可信，恶意代码可能影响网站安全</li>
+                                <li><strong>测试建议：</strong>添加代码后请及时检查前台页面是否正常显示</li>
+                                <li><strong>常用场景：</strong>网站统计、客服插件、广告代码、自定义样式等</li>
+                                <li><strong>代码格式：</strong>支持HTML、CSS、JavaScript等标准网页代码</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <h6><i class="bi bi-lightbulb"></i> 51LA统计快速上手指南</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>第一步：注册51LA账号</h6>
+                                    <p class="small mb-2">访问 <a href="https://v6.51.la/" target="_blank">51LA官网</a>，点击"免费注册"创建账号</p>
+                                    
+                                    <h6>第二步：添加网站</h6>
+                                    <p class="small mb-2">登录后点击"添加统计ID"，填写您的网站信息</p>
+                                    
+                                    <h6>第三步：获取代码</h6>
+                                    <p class="small mb-0">复制提供的统计代码，粘贴到左侧"51LA统计代码"文本框中</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>代码示例：</h6>
+                                    <pre class="bg-dark text-light p-2 rounded small"><code>&lt;script type="text/javascript" src="//js.users.51.la/12345678.js"&gt;&lt;/script&gt;</code></pre>
+                                    
+                                    <h6>注意事项：</h6>
+                                    <ul class="small mb-0">
+                                        <li>代码会自动添加到每个页面底部</li>
+                                        <li>通常5-10分钟后开始显示统计数据</li>
+                                        <li>可在51LA后台查看详细访问统计</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 广告管理标签页 -->
+                    <div class="tab-pane fade" id="ads" role="tabpanel" aria-labelledby="ads-tab">
+                        <div class="config-section">
+                            <h5><i class="bi bi-badge-ad"></i> 广告管理功能</h5>
+                            <div class="mb-3">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-info-circle"></i> 功能说明</h6>
+                                    <ul class="mb-0 small">
+                                        <li><strong>多位置支持：</strong>顶部横幅、侧边栏、内容区域、底部横幅</li>
+                                        <li><strong>图片自适应：</strong>自动适配不同屏幕尺寸，响应式设计</li>
+                                        <li><strong>支持外链：</strong>可使用外部图片链接或上传本地图片</li>
+                                        <li><strong>链接类型：</strong>支持外部链接（新窗口）和内部链接（当前窗口）</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <a href="{{ url_for('admin_ads') }}" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-badge-ad"></i> 进入广告管理
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> 保存所有配置
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// 确保Bootstrap的Tab功能正常工作
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化所有的Bootstrap组件
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %} 

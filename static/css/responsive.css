@@ -1,0 +1,1013 @@
+/* 移动端响应式缩放控制 */
+:root {
+    /* 基准变量，用于计算缩放比例 */
+    --base-width: 375px;
+    --scale-ratio: 1;
+    --font-scale: 1;
+    --spacing-scale: 1;
+    --control-scale: 1;
+    
+    /* 走势表提示位置变量 */
+    --trend-hint-left: 95px;
+}
+
+/* 动态根据视口宽度调整缩放系数 */
+@media screen {
+    :root {
+        --base-font-size: 16px;
+        --scale-ratio: 1;
+    }
+    
+    /* 默认移动端视图缩放基准设置 */
+    body.mobile-mode:root {
+        --scale-ratio: calc(100vw / var(--base-width));
+        --font-scale: clamp(0.85, var(--scale-ratio), 1.15);
+        --spacing-scale: clamp(0.8, var(--scale-ratio), 1.2);
+        --control-scale: clamp(0.85, var(--scale-ratio), 1.25);
+    }
+    
+    /* 根据不同屏幕宽度范围优化缩放系数 */
+    @media (max-width: 320px) {
+        body.mobile-mode:root {
+            --font-scale: 0.85;
+            --spacing-scale: 0.8;
+            --control-scale: 0.85;
+        }
+    }
+    
+    @media (min-width: 321px) and (max-width: 375px) {
+        body.mobile-mode:root {
+            --font-scale: 0.9;
+            --spacing-scale: 0.9;
+            --control-scale: 0.9;
+        }
+    }
+    
+    @media (min-width: 376px) and (max-width: 414px) {
+        body.mobile-mode:root {
+            --font-scale: 1;
+            --spacing-scale: 1;
+            --control-scale: 1;
+        }
+    }
+    
+    @media (min-width: 415px) and (max-width: 480px) {
+        body.mobile-mode:root {
+            --font-scale: 1.05;
+            --spacing-scale: 1.05;
+            --control-scale: 1.05;
+        }
+    }
+    
+    @media (min-width: 481px) and (max-width: 768px) {
+        body.mobile-mode:root {
+            --font-scale: 1.15;
+            --spacing-scale: 1.15;
+            --control-scale: 1.15;
+        }
+    }
+    
+    /* 平板设备优化 */
+    @media (min-width: 769px) {
+        body.mobile-mode:root {
+            --font-scale: 1.2;
+            --spacing-scale: 1.2;
+            --control-scale: 1.2;
+        }
+    }
+}
+
+/* 移动端响应式字体大小设置 */
+body.mobile-mode {
+    font-size: calc(var(--base-font-size) * var(--font-scale));
+}
+
+/* 移动端模式下的容器响应式处理 */
+body.mobile-mode .container {
+    padding-left: calc(5px * var(--spacing-scale));
+    padding-right: calc(5px * var(--spacing-scale));
+}
+
+/* 导航条按钮与元素缩放 */
+body.mobile-mode .navbar .btn,
+body.mobile-mode .navbar-brand,
+body.mobile-mode .navbar .nav-link {
+    transform: scale(var(--control-scale));
+    transform-origin: center;
+}
+
+body.mobile-mode .navbar-brand {
+    font-size: calc(1.1rem * var(--font-scale));
+}
+
+body.mobile-mode #toggle-device-mode {
+    padding: calc(0.25rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale));
+    font-size: calc(0.8rem * var(--font-scale));
+}
+
+/* 按钮控件缩放 */
+body.mobile-mode .btn {
+    font-size: calc(0.875rem * var(--font-scale));
+    padding: calc(0.375rem * var(--spacing-scale)) calc(0.75rem * var(--spacing-scale));
+}
+
+body.mobile-mode .btn-sm {
+    padding: calc(0.25rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+}
+
+/* 标题按钮控件优化 - 保持大小一致且靠右对齐 */
+body.mobile-mode .card-header .btn,
+body.mobile-mode .card-header .btn-sm {
+    min-width: calc(32px * var(--control-scale));
+    height: calc(32px * var(--control-scale));
+    padding: calc(0.25rem * var(--spacing-scale)) calc(0.4rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: calc(4px * var(--spacing-scale));
+    flex-shrink: 0;
+}
+
+body.mobile-mode .card-header .d-flex.justify-content-between {
+    flex-wrap: nowrap;
+}
+
+body.mobile-mode .card-header .d-flex.justify-content-between > div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    margin-left: auto;
+}
+
+/* 最新开奖区域按钮优化 */
+body.mobile-mode #refresh-btn,
+body.mobile-mode #peek-btn {
+    min-width: calc(72px * var(--control-scale));
+    height: calc(32px * var(--control-scale));
+    white-space: nowrap;
+    padding: calc(0.2rem * var(--spacing-scale)) calc(0.4rem * var(--spacing-scale));
+}
+
+/* 主按钮优化 - 刷新开奖和联系客服按钮 */
+body.mobile-mode .header-main-btn {
+    min-width: calc(80px * var(--control-scale)) !important;
+    height: calc(32px * var(--control-scale)) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    padding: calc(0.25rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale)) !important;
+    font-size: calc(0.8rem * var(--font-scale)) !important;
+    margin-left: calc(4px * var(--spacing-scale)) !important;
+}
+
+body.mobile-mode .header-main-btn i {
+    margin-right: calc(4px * var(--spacing-scale));
+}
+
+body.mobile-mode #peek-btn .badge {
+    font-size: calc(0.65rem * var(--font-scale));
+    padding: calc(0.2rem * var(--spacing-scale)) calc(0.35rem * var(--spacing-scale));
+}
+
+/* 分析界面刷新按钮优化 */
+body.mobile-mode #analysis-refresh-btn,
+body.mobile-mode #missing-refresh-btn,
+body.mobile-mode #stats-refresh-btn {
+    min-width: calc(64px * var(--control-scale));
+    height: calc(32px * var(--control-scale));
+    padding: calc(0.2rem * var(--spacing-scale)) calc(0.4rem * var(--spacing-scale));
+    white-space: nowrap;
+}
+
+body.mobile-mode .input-group-sm .input-group-text {
+    height: calc(32px * var(--control-scale));
+    padding: calc(0.25rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+}
+
+body.mobile-mode .input-group-sm .form-control {
+    height: calc(32px * var(--control-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+}
+
+/* 卡片组件缩放 */
+body.mobile-mode .card {
+    margin-bottom: calc(1.5rem * var(--spacing-scale));
+}
+
+body.mobile-mode .card-header {
+    padding: calc(0.75rem * var(--spacing-scale)) calc(1.25rem * var(--spacing-scale));
+}
+
+body.mobile-mode .card-body {
+    padding: calc(1.25rem * var(--spacing-scale));
+}
+
+/* 标题优化 */
+body.mobile-mode .card-title {
+    margin-bottom: calc(0.75rem * var(--spacing-scale));
+    font-size: calc(1.25rem * var(--font-scale));
+    line-height: 1.3;
+}
+
+/* 开奖标题优化 */
+body.mobile-mode .lottery-title-main {
+    display: block;
+    font-size: calc(1.2rem * var(--font-scale));
+    font-weight: 600;
+    margin-bottom: calc(0.15rem * var(--spacing-scale));
+}
+
+body.mobile-mode .lottery-title-qihao {
+    display: block;
+    font-size: calc(0.9rem * var(--font-scale));
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 表格组件缩放 */
+body.mobile-mode .table th,
+body.mobile-mode .table td {
+    padding: calc(0.5rem * var(--spacing-scale));
+    font-size: calc(0.875rem * var(--font-scale));
+}
+
+/* 号码显示与按钮缩放 */
+body.mobile-mode .lottery-number,
+body.mobile-mode .lottery-sum {
+    width: calc(45px * var(--control-scale));
+    height: calc(45px * var(--control-scale));
+    font-size: calc(1.5rem * var(--font-scale));
+}
+
+body.mobile-mode .lottery-operator {
+    font-size: calc(1.2rem * var(--font-scale));
+}
+
+body.mobile-mode .lottery-result-item {
+    width: calc(40px * var(--control-scale));
+    height: calc(40px * var(--control-scale));
+    font-size: calc(1.2rem * var(--font-scale));
+}
+
+/* 倒计时组件缩放 */
+body.mobile-mode .countdown-wrapper {
+    max-width: calc(280px * var(--control-scale));
+}
+
+body.mobile-mode .countdown-container {
+    padding: calc(10px * var(--spacing-scale)) calc(15px * var(--spacing-scale));
+}
+
+body.mobile-mode .countdown-icon {
+    width: calc(36px * var(--control-scale));
+    height: calc(36px * var(--control-scale));
+    margin-right: calc(10px * var(--spacing-scale));
+}
+
+body.mobile-mode .countdown-icon i {
+    font-size: calc(1.2rem * var(--font-scale));
+}
+
+body.mobile-mode .countdown-label {
+    font-size: calc(0.85rem * var(--font-scale));
+}
+
+body.mobile-mode .countdown {
+    font-size: calc(1.4rem * var(--font-scale));
+}
+
+/* 号码网格缩放 */
+body.mobile-mode .number-grid {
+    gap: calc(6px * var(--spacing-scale));
+}
+
+body.mobile-mode .number-button {
+    height: calc(40px * var(--control-scale));
+    font-size: calc(0.9rem * var(--font-scale));
+}
+
+/* 频率号码容器适配 */
+body.mobile-mode .number-grid-layout {
+    gap: calc(7px * var(--spacing-scale));
+}
+
+body.mobile-mode .number-grid-item {
+    padding: calc(6px * var(--spacing-scale)) calc(2px * var(--spacing-scale));
+}
+
+body.mobile-mode .number-value {
+    font-size: calc(0.95rem * var(--font-scale));
+    margin-bottom: calc(3px * var(--spacing-scale));
+}
+
+body.mobile-mode .number-count {
+    font-size: calc(0.8rem * var(--font-scale));
+    padding: calc(1px * var(--spacing-scale)) calc(4px * var(--spacing-scale));
+}
+
+/* 分析组件缩放 */
+body.mobile-mode .analysis-summary-item {
+    padding: calc(8px * var(--spacing-scale)) calc(5px * var(--spacing-scale));
+}
+
+body.mobile-mode .analysis-summary-item label {
+    font-size: calc(0.85rem * var(--font-scale));
+    margin-bottom: calc(3px * var(--spacing-scale));
+}
+
+body.mobile-mode .analysis-summary-item .value {
+    font-size: calc(1.15rem * var(--font-scale));
+}
+
+/* 分析结果区域子卡片标题优化 */
+body.mobile-mode #analysis-result .card-header h6.card-title {
+    font-size: calc(0.95rem * var(--font-scale));
+    white-space: normal;
+    line-height: 1.3;
+}
+
+/* 趋势分析表格适配 */
+/* 走势表格的优化样式，支持横向滚动并优化显示 */
+body.mobile-mode #trend-analysis-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    width: 100%;
+    margin-bottom: calc(15px * var(--spacing-scale));
+    scrollbar-width: thin;
+    scrollbar-color: #0d6efd #f8f9fa;
+}
+
+/* 添加横向滚动指示器 */
+body.mobile-mode #trend-analysis-container::after {
+    content: '👉 向右滑动';
+    position: absolute;
+    left: var(--trend-hint-left, 95px); /* 使用CSS变量，默认值95px */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(13, 110, 253, 0.8);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: calc(0.7rem * var(--font-scale));
+    pointer-events: none;
+    opacity: 0.8;
+    z-index: 10;
+    animation: swipe-hint 2s ease-in-out infinite;
+    white-space: nowrap;
+}
+
+@keyframes swipe-hint {
+    0% { opacity: 0.8; transform: translateY(-50%) translateX(0); }
+    50% { opacity: 0.5; transform: translateY(-50%) translateX(5px); }
+    100% { opacity: 0.8; transform: translateY(-50%) translateX(0); }
+}
+
+/* 已经滚动后隐藏提示 */
+body.mobile-mode #trend-analysis-container.scrolled::after {
+    display: none;
+}
+
+body.mobile-mode #trend-analysis-table th, 
+body.mobile-mode #trend-analysis-table td {
+    padding: calc(4px * var(--spacing-scale)) calc(1px * var(--spacing-scale));
+    font-size: calc(11px * var(--font-scale));
+}
+
+/* 触摸友好性优化: 增加点击区域大小 */
+body.mobile-mode .btn,
+body.mobile-mode .number-button,
+body.mobile-mode .freq-number-item,
+body.mobile-mode .combo-item {
+    position: relative;
+}
+
+body.mobile-mode .btn::after,
+body.mobile-mode .number-button::after,
+body.mobile-mode .freq-number-item::after,
+body.mobile-mode .combo-item::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    bottom: -5px;
+    left: -5px;
+    z-index: 1;
+}
+
+/* 动画和过渡效果优化 */
+body.mobile-mode * {
+    transition-duration: calc(var(--transition-duration, 0.3s) * 0.7);
+}
+
+body.mobile-mode .number-button:active,
+body.mobile-mode .btn:active {
+    transform: scale(calc(0.95 * var(--control-scale)));
+}
+
+/* 小屏幕额外优化 */
+@media (max-width: 375px) {
+    body.mobile-mode .card-header .d-flex > div {
+        gap: calc(2px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .tab-button {
+        padding: calc(0.25rem * var(--spacing-scale)) calc(0.05rem * var(--spacing-scale));
+        margin: 0;
+        height: auto;
+        min-height: calc(50px * var(--control-scale));
+    }
+    
+    body.mobile-mode .tab-button i {
+        font-size: calc(0.9rem * var(--font-scale));
+        margin-bottom: calc(0.2rem * var(--spacing-scale));
+        display: block;
+    }
+    
+    body.mobile-mode .tab-button .btn-text {
+        font-size: calc(0.65rem * var(--font-scale));
+        display: block;
+    }
+    
+    body.mobile-mode .card-header .d-flex .btn,
+    body.mobile-mode .card-header .d-flex .btn-sm {
+        padding: calc(0.2rem * var(--spacing-scale)) calc(0.35rem * var(--spacing-scale));
+        margin-left: calc(2px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .card-header .card-title {
+        font-size: calc(1.1rem * var(--font-scale));
+        max-width: calc(160px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .lottery-title-main {
+        font-size: calc(1.05rem * var(--font-scale));
+    }
+    
+    body.mobile-mode .lottery-title-qihao {
+        font-size: calc(0.85rem * var(--font-scale));
+    }
+    
+    body.mobile-mode #refresh-btn,
+    body.mobile-mode #peek-btn {
+        min-width: calc(62px * var(--control-scale));
+    }
+    
+    body.mobile-mode #analysis-refresh-btn,
+    body.mobile-mode #missing-refresh-btn,
+    body.mobile-mode #stats-refresh-btn {
+        min-width: calc(54px * var(--control-scale));
+    }
+}
+
+/* 超小屏幕进一步优化 */
+@media (max-width: 320px) {
+    body.mobile-mode .card-header i + span,
+    body.mobile-mode .card-header .me-2 {
+        margin-right: calc(0.25rem * var(--spacing-scale)) !important;
+    }
+    
+    body.mobile-mode .tab-button {
+        padding: calc(0.15rem * var(--spacing-scale)) calc(0.05rem * var(--spacing-scale));
+        min-height: calc(46px * var(--control-scale));
+    }
+    
+    body.mobile-mode .tab-button i {
+        font-size: calc(0.85rem * var(--font-scale));
+        margin-bottom: calc(0.15rem * var(--spacing-scale));
+        display: block;
+    }
+    
+    body.mobile-mode .tab-button .btn-text {
+        font-size: calc(0.6rem * var(--font-scale));
+        display: block;
+        line-height: 1;
+    }
+    
+    body.mobile-mode .card-header .btn i {
+        font-size: calc(0.8rem * var(--font-scale));
+    }
+    
+    body.mobile-mode #refresh-btn,
+    body.mobile-mode #peek-btn {
+        min-width: calc(56px * var(--control-scale));
+    }
+    
+    body.mobile-mode .card-header .card-title {
+        font-size: calc(1rem * var(--font-scale));
+        max-width: calc(140px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .lottery-title-main {
+        font-size: calc(1rem * var(--font-scale));
+        margin-bottom: calc(0.1rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .lottery-title-qihao {
+        font-size: calc(0.8rem * var(--font-scale));
+    }
+    
+    body.mobile-mode #analysis-result .card-header h6.card-title {
+        font-size: calc(0.85rem * var(--font-scale));
+    }
+}
+
+/* 横屏模式优化 */
+@media (orientation: landscape) and (max-width: 900px) {
+    body.mobile-mode {
+        --font-scale: 0.9;
+        --spacing-scale: 0.85;
+        --control-scale: 0.85;
+    }
+    
+    body.mobile-mode .container {
+        max-width: 100%;
+        padding-left: calc(10px * var(--spacing-scale));
+        padding-right: calc(10px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .row {
+        margin-left: calc(-5px * var(--spacing-scale));
+        margin-right: calc(-5px * var(--spacing-scale));
+    }
+    
+    body.mobile-mode [class*="col-"] {
+        padding-left: calc(5px * var(--spacing-scale));
+        padding-right: calc(5px * var(--spacing-scale));
+    }
+    
+    /* 横屏时标题按钮优化 */
+    body.mobile-mode .card-header .d-flex {
+        align-items: center;
+    }
+    
+    body.mobile-mode .card-header .btn,
+    body.mobile-mode .card-header .btn-sm {
+        margin-left: calc(5px * var(--spacing-scale));
+    }
+    
+    /* 横屏时导航tab按钮优化 */
+    body.mobile-mode .tab-button {
+        flex-direction: row;
+        padding: calc(0.25rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale));
+        height: auto;
+        min-height: calc(36px * var(--control-scale));
+    }
+    
+    body.mobile-mode .tab-button i {
+        margin-right: calc(0.3rem * var(--spacing-scale));
+        margin-bottom: 0;
+        display: inline-block;
+    }
+    
+    body.mobile-mode .tab-button .btn-text {
+        font-size: calc(0.75rem * var(--font-scale));
+        display: inline-block;
+    }
+
+    /* 横屏时统计页面布局优化 */
+    body.mobile-mode .stats-header .d-flex {
+        flex-wrap: nowrap;
+    }
+    
+    body.mobile-mode .stats-section {
+        margin-bottom: calc(0.5rem * var(--spacing-scale));
+        padding: calc(0.6rem * var(--spacing-scale)) !important;
+    }
+    
+    body.mobile-mode .stats-title {
+        margin-bottom: calc(0.3rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-section .row {
+        margin-bottom: calc(0.3rem * var(--spacing-scale));
+    }
+    
+    /* 横屏时骨架屏优化 */
+    body.mobile-mode .skeleton-section {
+        height: calc(90px * var(--control-scale));
+        margin-bottom: calc(0.5rem * var(--spacing-scale));
+    }
+}
+
+/* 移动端导航按钮均匀分布 */
+body.mobile-mode .tab-buttons-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    flex-wrap: nowrap;
+}
+
+body.mobile-mode .tab-button {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-right: 0 !important;
+    padding: calc(0.3rem * var(--spacing-scale)) calc(0.1rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 4px;
+    height: auto;
+    margin: 0 1px;
+    min-height: calc(54px * var(--control-scale));
+}
+
+body.mobile-mode .tab-button i {
+    font-size: calc(1rem * var(--font-scale));
+    margin-bottom: calc(0.25rem * var(--spacing-scale));
+    display: block;
+    line-height: 1;
+}
+
+body.mobile-mode .tab-button .btn-text {
+    font-size: calc(0.7rem * var(--font-scale));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block !important;
+    line-height: 1.2;
+    visibility: visible !important;
+    height: auto !important;
+    opacity: 1 !important;
+}
+
+/* 移动端下隐藏最新开奖区域的组合标识 */
+body.mobile-mode #latest-lottery-info .lottery-result {
+    display: none !important;
+}
+
+/* 移动端下优化最新开奖区域的数字显示 */
+body.mobile-mode #latest-lottery-info .lottery-numbers {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: calc(0.5rem * var(--spacing-scale));
+    padding: calc(0.8rem * var(--spacing-scale)) calc(0.5rem * var(--spacing-scale));
+    background-color: rgba(248, 249, 250, 0.7);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* 增大开奖号码显示尺寸 */
+body.mobile-mode #latest-lottery-info .lottery-number {
+    width: calc(52px * var(--control-scale));
+    height: calc(52px * var(--control-scale));
+    font-size: calc(1.8rem * var(--font-scale));
+    font-weight: 600;
+    margin: 0 calc(0.3rem * var(--spacing-scale));
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    border: 2px solid #fff;
+}
+
+body.mobile-mode #latest-lottery-info .lottery-sum {
+    width: calc(56px * var(--control-scale));
+    height: calc(56px * var(--control-scale));
+    font-size: calc(2rem * var(--font-scale));
+    font-weight: 700;
+    margin: 0 calc(0.3rem * var(--spacing-scale));
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+    border: 2px solid #fff;
+}
+
+body.mobile-mode #latest-lottery-info .lottery-operator {
+    font-size: calc(1.6rem * var(--font-scale));
+    font-weight: 600;
+    margin: 0 calc(0.1rem * var(--spacing-scale));
+}
+
+/* 小屏幕手机的适配 */
+@media (max-width: 375px) {
+    body.mobile-mode #latest-lottery-info .lottery-number {
+        width: calc(48px * var(--control-scale));
+        height: calc(48px * var(--control-scale));
+        font-size: calc(1.7rem * var(--font-scale));
+        margin: 0 calc(0.1rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode #latest-lottery-info .lottery-sum {
+        width: calc(52px * var(--control-scale));
+        height: calc(52px * var(--control-scale));
+        font-size: calc(1.8rem * var(--font-scale));
+        margin: 0 calc(0.1rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode #latest-lottery-info .lottery-operator {
+        font-size: calc(1.5rem * var(--font-scale));
+        margin: 0 calc(0.2rem * var(--spacing-scale));
+    }
+}
+
+/* 超小屏幕手机的适配 */
+@media (max-width: 320px) {
+    body.mobile-mode #latest-lottery-info .lottery-number {
+        width: calc(40px * var(--control-scale));
+        height: calc(40px * var(--control-scale));
+        font-size: calc(1.5rem * var(--font-scale));
+        margin: 0 calc(0.05rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode #latest-lottery-info .lottery-sum {
+        width: calc(46px * var(--control-scale));
+        height: calc(46px * var(--control-scale));
+        font-size: calc(1.6rem * var(--font-scale));
+        margin: 0 calc(0.05rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode #latest-lottery-info .lottery-operator {
+        font-size: calc(1.3rem * var(--font-scale));
+        margin: 0 calc(0.1rem * var(--spacing-scale));
+    }
+}
+
+/* 移动端刮奖时防止页面滚动 */
+body.mobile-mode.scratch-cursor {
+    overscroll-behavior: none;
+}
+
+body.mobile-mode .lottery-scratch-container {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* 统计页面移动端适配样式 */
+/* 统计头部区域缩放 */
+body.mobile-mode .stats-header {
+    border-radius: calc(0.25rem * var(--spacing-scale));
+    margin-bottom: calc(0.5rem * var(--spacing-scale));
+}
+
+body.mobile-mode .stats-header .d-flex {
+    padding: calc(0.5rem * var(--spacing-scale)) !important;
+}
+
+body.mobile-mode .date-select-container {
+    width: calc(110px * var(--control-scale));
+}
+
+body.mobile-mode .date-select-container input[type="text"] {
+    font-size: calc(0.75rem * var(--font-scale));
+    height: calc(30px * var(--control-scale));
+    padding: calc(0.2rem * var(--spacing-scale)) calc(0.3rem * var(--spacing-scale));
+}
+
+body.mobile-mode .date-select-container .bi-calendar-date {
+    font-size: calc(0.8rem * var(--font-scale));
+}
+
+body.mobile-mode .stats-count-section {
+    font-size: calc(0.8rem * var(--font-scale));
+    margin-right: 0;
+}
+
+body.mobile-mode .stats-count-section .me-2 {
+    margin-right: calc(0.2rem * var(--spacing-scale)) !important;
+}
+
+body.mobile-mode .stats-count-section .badge {
+    font-size: calc(0.75rem * var(--font-scale));
+    min-width: calc(25px * var(--control-scale));
+    padding: calc(0.15rem * var(--spacing-scale)) calc(0.2rem * var(--spacing-scale));
+}
+
+/* 统计内容区域缩放 */
+body.mobile-mode .stats-section {
+    margin-bottom: calc(0.5rem * var(--spacing-scale));
+    border-radius: calc(0.5rem * var(--spacing-scale)) !important;
+    padding: calc(0.5rem * var(--spacing-scale)) !important;
+}
+
+body.mobile-mode .stats-title {
+    font-size: calc(0.9rem * var(--font-scale));
+    margin-bottom: calc(0.3rem * var(--spacing-scale));
+    padding-left: calc(0.5rem * var(--spacing-scale));
+    border-left: calc(3px * var(--control-scale)) solid #0d6efd;
+    padding-bottom: calc(0.3rem * var(--spacing-scale));
+}
+
+body.mobile-mode .stats-section .row {
+    margin-bottom: calc(0.25rem * var(--spacing-scale));
+    margin-top: calc(0.25rem * var(--spacing-scale)) !important;
+}
+
+body.mobile-mode .stats-section .col-6 {
+    padding: calc(0.25rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+}
+
+body.mobile-mode .stats-section .badge {
+    min-width: calc(32px * var(--control-scale));
+    font-size: calc(0.7rem * var(--font-scale));
+    margin-right: calc(0.2rem * var(--spacing-scale));
+    padding: calc(0.15rem * var(--spacing-scale)) calc(0.2rem * var(--spacing-scale));
+    border-radius: calc(0.2rem * var(--spacing-scale));
+}
+
+/* 骨架屏幕缩放 */
+body.mobile-mode .skeleton-header {
+    height: calc(60px * var(--control-scale));
+    margin-bottom: calc(0.75rem * var(--spacing-scale));
+    border-radius: calc(0.5rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-section {
+    height: calc(110px * var(--control-scale));
+    margin-bottom: calc(0.75rem * var(--spacing-scale));
+    border-radius: calc(0.5rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-title {
+    height: calc(20px * var(--control-scale));
+    margin-bottom: calc(0.75rem * var(--spacing-scale));
+    border-radius: calc(0.25rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-item {
+    height: calc(16px * var(--control-scale));
+    margin-bottom: calc(0.5rem * var(--spacing-scale));
+    border-radius: calc(0.25rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-badge {
+    height: calc(20px * var(--control-scale));
+    width: calc(40px * var(--control-scale));
+    margin-right: calc(0.4rem * var(--spacing-scale));
+    border-radius: calc(0.25rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-text {
+    height: calc(14px * var(--control-scale));
+    border-radius: calc(0.25rem * var(--spacing-scale));
+}
+
+body.mobile-mode .skeleton-container .p-3 {
+    padding: calc(0.75rem * var(--spacing-scale)) !important;
+}
+
+/* 数据加载蒙层和动画缩放 */
+body.mobile-mode .stats-loading-overlay {
+    backdrop-filter: blur(calc(2px * var(--control-scale)));
+}
+
+body.mobile-mode .stats-loading-spinner {
+    width: calc(40px * var(--control-scale));
+    height: calc(40px * var(--control-scale));
+    border-width: calc(3px * var(--control-scale));
+}
+
+/* 统计数据项淡入效果缩放 */
+body.mobile-mode .stats-fade-in {
+    transform: translateY(calc(8px * var(--spacing-scale)));
+}
+
+/* 小屏幕特殊适配 */
+@media (max-width: 375px) {
+    body.mobile-mode .stats-count-section .me-2 {
+        margin-right: calc(0.15rem * var(--spacing-scale)) !important;
+    }
+    
+    body.mobile-mode .date-select-container {
+        width: calc(100px * var(--control-scale));
+    }
+    
+    body.mobile-mode .stats-count-section {
+        margin-right: calc(0.25rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-count-section .badge {
+        min-width: calc(22px * var(--control-scale));
+        padding: calc(0.1rem * var(--spacing-scale)) calc(0.2rem * var(--spacing-scale));
+        font-size: calc(0.7rem * var(--font-scale));
+    }
+    
+    body.mobile-mode .stats-section .badge {
+        min-width: calc(30px * var(--control-scale));
+        font-size: calc(0.65rem * var(--font-scale));
+        padding: calc(0.1rem * var(--spacing-scale)) calc(0.2rem * var(--spacing-scale));
+    }
+}
+
+/* 超小屏幕特殊适配 */
+@media (max-width: 320px) {
+    body.mobile-mode .stats-header .d-flex {
+        flex-wrap: nowrap !important;
+        padding: calc(0.4rem * var(--spacing-scale)) !important;
+    }
+    
+    body.mobile-mode .date-select-container {
+        width: calc(90px * var(--control-scale));
+    }
+    
+    body.mobile-mode .date-select-container input[type="text"] {
+        font-size: calc(0.65rem * var(--font-scale));
+        padding: calc(0.15rem * var(--spacing-scale)) calc(0.2rem * var(--spacing-scale));
+        height: calc(24px * var(--control-scale));
+    }
+    
+    body.mobile-mode .date-select-container .bi-calendar-date {
+        font-size: calc(0.7rem * var(--font-scale));
+    }
+    
+    body.mobile-mode .stats-count-section {
+        font-size: calc(0.65rem * var(--font-scale));
+    }
+    
+    body.mobile-mode .stats-count-section .badge {
+        min-width: calc(20px * var(--control-scale));
+        font-size: calc(0.6rem * var(--font-scale));
+        padding: calc(0.1rem * var(--spacing-scale)) calc(0.15rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-section .col-6 {
+        font-size: calc(0.65rem * var(--font-scale));
+        padding: calc(0.2rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-section .badge {
+        min-width: calc(26px * var(--control-scale));
+        font-size: calc(0.6rem * var(--font-scale));
+        padding: calc(0.1rem * var(--spacing-scale)) calc(0.15rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-title {
+        font-size: calc(0.8rem * var(--font-scale));
+        margin-bottom: calc(0.25rem * var(--spacing-scale));
+        border-left: calc(2px * var(--control-scale)) solid #0d6efd;
+    }
+}
+
+/* 统计刷新按钮缩放优化 */
+body.mobile-mode #stats-refresh-btn {
+    height: calc(32px * var(--control-scale));
+    min-width: calc(64px * var(--control-scale));
+    padding: calc(0.2rem * var(--spacing-scale)) calc(0.4rem * var(--spacing-scale));
+    font-size: calc(0.75rem * var(--font-scale));
+    white-space: nowrap;
+}
+
+body.mobile-mode #stats-refresh-btn i {
+    font-size: calc(0.8rem * var(--font-scale));
+    margin-right: calc(0.2rem * var(--spacing-scale));
+}
+
+/* 小屏幕特殊适配统计刷新按钮 */
+@media (max-width: 375px) {
+    body.mobile-mode #stats-refresh-btn {
+        min-width: calc(58px * var(--control-scale));
+        padding: calc(0.15rem * var(--spacing-scale)) calc(0.3rem * var(--spacing-scale));
+    }
+}
+
+/* 超小屏幕特殊适配统计刷新按钮 */
+@media (max-width: 320px) {
+    body.mobile-mode #stats-refresh-btn {
+        min-width: calc(52px * var(--control-scale));
+        padding: calc(0.1rem * var(--spacing-scale)) calc(0.25rem * var(--spacing-scale));
+        font-size: calc(0.7rem * var(--font-scale));
+    }
+    
+    body.mobile-mode #stats-refresh-btn i {
+        font-size: calc(0.75rem * var(--font-scale));
+    }
+}
+
+@media (orientation: landscape) {
+    /* 横屏特殊优化 */
+    body.mobile-mode .stats-header {
+        margin-bottom: calc(0.4rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .date-select-container {
+        width: calc(130px * var(--control-scale));
+    }
+    
+    body.mobile-mode .stats-count-section {
+        font-size: calc(0.85rem * var(--font-scale));
+    }
+    
+    body.mobile-mode .stats-section {
+        margin-bottom: calc(0.4rem * var(--spacing-scale));
+    }
+    
+    body.mobile-mode .stats-section .col-6 {
+        padding: calc(0.3rem * var(--spacing-scale));
+        font-size: calc(0.8rem * var(--font-scale));
+    }
+} 

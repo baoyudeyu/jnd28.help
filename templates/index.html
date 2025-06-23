@@ -1,0 +1,517 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - 开奖信息{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 内容区域广告 -->
+    <div class="col-12">
+        <div data-ad-position="content" style="display: none;"></div>
+    </div>
+    
+    <!-- 最新开奖结果 -->
+    {% if latest_result %}
+    <div class="col-md-12 mb-0">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <span class="lottery-title-main">最新开奖</span> 
+                        <span class="lottery-title-qihao">第<span id="latest-qihao">{{ latest_result.qihao }}</span>期</span>
+                    </h5>
+                    <div>
+                        <button id="peek-btn" class="btn btn-sm btn-outline-light header-main-btn" data-status="off">
+                            <i class="bi bi-eye-slash"></i> 咪牌<span class="ms-1 badge bg-secondary">关闭</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- PC端左右结构布局，移动端保持上下结构 -->
+                <div class="lottery-flex-container">
+                    <!-- 倒计时显示 - PC端在左侧 -->
+                    {% if latest_result %}
+                    <div class="lottery-countdown-container">
+                        <div class="countdown-wrapper">
+                            <div class="countdown-container justify-content-center">
+                                <div class="countdown-icon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="countdown-content">
+                                    <span class="countdown-label">下一期倒计时</span>
+                                    <div id="countdown" class="countdown" data-last-draw-time="{{ latest_result.opentime }}" data-lottery-interval="{{ lottery_interval }}">
+                                        <span id="countdown-status">计算中...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 开奖信息显示 - PC端在右侧 -->
+                    <div class="lottery-result-container">
+                        <div id="latest-lottery-info" class="lottery-info">
+                            <div class="lottery-row">
+                                <div class="lottery-numbers">
+                                    {% set numbers = latest_result.result.split('+') %}
+                                    {% for num in numbers %}
+                                        <span class="lottery-number">{{ num }}</span>
+                                        {% if not loop.last %}<span class="lottery-operator">+</span>{% endif %}
+                                    {% endfor %}
+                                    <span class="lottery-operator">=</span>
+                                    <span class="lottery-sum">{{ latest_result.number_sum }}</span>
+                                </div>
+                                <div class="lottery-result">
+                                    <div class="lottery-result-item {% if latest_result.size == '大' %}big{% else %}small{% endif %}">{{ latest_result.size }}</div>
+                                    <div class="lottery-result-item {% if latest_result.odd_even == '单' %}odd{% else %}even{% endif %}">{{ latest_result.odd_even }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 历史开奖列表 -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex tab-buttons-container">
+                        <button id="lottery-records-btn" class="btn btn-sm btn-outline-light active me-2 tab-button">
+                            <i class="bi bi-list-ol"></i> <span class="btn-text">历史</span>
+                        </button>
+                        <button id="stats-query-btn" class="btn btn-sm btn-outline-light me-2 tab-button">
+                            <i class="bi bi-bar-chart-fill"></i> <span class="btn-text">统计</span>
+                        </button>
+                        <button id="trend-analysis-btn" class="btn btn-sm btn-outline-light me-2 tab-button">
+                            <i class="bi bi-graph-up"></i> <span class="btn-text">走势</span>
+                        </button>
+                        <button id="missing-query-btn" class="btn btn-sm btn-outline-light me-2 tab-button">
+                            <i class="bi bi-search"></i> <span class="btn-text">遗漏</span>
+                        </button>
+                        <button id="analysis-btn" class="btn btn-sm btn-outline-light tab-button">
+                            <i class="bi bi-lightning"></i> <span class="btn-text">分析</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 内容容器 -->
+                <div class="content-containers">
+                    <!-- 开奖记录表格 -->
+                    <div id="lottery-table-container" class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">开奖期号</th>
+                                    <th class="text-center">开奖时间</th>
+                                    <th class="text-center">开奖号码</th>
+                                    <th class="text-center">组合</th>
+                                    <th class="text-center">形态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lottery-results">
+                                {% if lottery_results %}
+                                    {% for item in lottery_results %}
+                                    <tr>
+                                        <td class="text-center">{{ item.qihao }}</td>
+                                        <td class="text-center">{{ item.opentime }}</td>
+                                        <td class="text-center">{{ item.result }}={{ item.number_sum }}</td>
+                                        <td class="text-center">
+                                            <span class="combination">
+                                                <span class="{% if item.size == '大' %}big{% else %}small{% endif %}">{{ item.size }}</span><span class="{% if item.odd_even == '单' %}odd{% else %}even{% endif %}">{{ item.odd_even }}</span>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if item.pattern %}
+                                            <span class="pattern-badge {{ item.pattern.lower() }}">{{ item.pattern }}</span>
+                                            {% else %}
+                                            <span class="pattern-badge mixed">杂六</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">暂无数据</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 走势分析表格 -->
+                    <div id="trend-analysis-container" class="table-responsive" style="display: none;">
+                        <table class="table table-striped table-hover table-bordered" id="trend-analysis-table">
+                            <thead>
+                                <tr class="table-light">
+                                    <th class="text-center">开奖期号</th>
+                                    <th class="text-center">值</th>
+                                    <th class="text-center">小</th>
+                                    <th class="text-center">大</th>
+                                    <th class="text-center">单</th>
+                                    <th class="text-center">双</th>
+                                    <th class="text-center">小单</th>
+                                    <th class="text-center">小双</th>
+                                    <th class="text-center">大单</th>
+                                    <th class="text-center">大双</th>
+                                    <th class="text-center">小边</th>
+                                    <th class="text-center">中数</th>
+                                    <th class="text-center">大边</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trend-analysis-results">
+                                <!-- 未开间隔行 -->
+                                <tr class="interval-row">
+                                    <td class="text-center">未开间隔</td>
+                                    <td class="text-center countdown-cell">
+                                        <span id="trend-countdown">等待...</span>
+                                    </td>
+                                    <td class="text-center"><span class="small-interval">0</span></td>
+                                    <td class="text-center"><span class="big-interval">0</span></td>
+                                    <td class="text-center"><span class="odd-interval">0</span></td>
+                                    <td class="text-center"><span class="even-interval">0</span></td>
+                                    <td class="text-center"><span class="small-odd-interval">0</span></td>
+                                    <td class="text-center"><span class="small-even-interval">0</span></td>
+                                    <td class="text-center"><span class="big-odd-interval">0</span></td>
+                                    <td class="text-center"><span class="big-even-interval">0</span></td>
+                                    <td class="text-center"><span class="small-edge-interval">0</span></td>
+                                    <td class="text-center"><span class="middle-interval">0</span></td>
+                                    <td class="text-center"><span class="big-edge-interval">0</span></td>
+                                </tr>
+                                <!-- 走势分析结果将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 遗漏查询容器 -->
+                    <div id="missing-query-container" class="table-responsive" style="display: none;">
+                        <div class="card border-primary mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <span class="lottery-title-main">遗漏查询</span>
+                                    </h5>
+                                    <button id="missing-refresh-btn" class="btn btn-sm btn-outline-light header-main-btn">
+                                        <i class="bi bi-arrow-repeat"></i> 刷新数据
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="missing-loading" class="text-center p-3">
+                            <i class="bi bi-hourglass-split"></i> 正在加载遗漏数据...
+                        </div>
+                        
+                        <div id="missing-data" class="w-100" style="display: none;">
+                            <!-- 基本类型和形态遗漏表格 -->
+                                                                        <div class="table-responsive-sm">
+                                <table class="table table-striped table-hover table-bordered mb-2">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="20%">类型</th>
+                                            <th class="text-center" width="30%">未开期数</th>
+                                            <th class="text-center" width="20%">类型</th>
+                                            <th class="text-center" width="30%">未开期数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="basic-pattern-missing-body">
+                                        <!-- 由JavaScript填充基本统计和形态统计 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- 和值遗漏表格 -->
+                            <div class="table-responsive-sm">
+                                <table class="table table-striped table-hover table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="20%">和值</th>
+                                            <th class="text-center" width="30%">未开期数</th>
+                                            <th class="text-center" width="20%">和值</th>
+                                            <th class="text-center" width="30%">未开期数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sum-missing-body">
+                                        <!-- 由JavaScript填充和值统计 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- 更新时间显示已移除 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 已开统计容器 -->
+                    <div id="stats-query-container" class="table-responsive" style="display: none;">
+                        <div id="stats-loading" class="text-center p-3" style="display: none;">
+                            <i class="bi bi-hourglass-split"></i> 正在加载统计数据...
+                        </div>
+                        
+                        <!-- 骨架屏 -->
+                        <div id="stats-skeleton" class="skeleton-container">
+                            <!-- 头部骨架 -->
+                            <div class="skeleton-header skeleton-pulse"></div>
+                            
+                            <!-- 基本类型骨架 -->
+                            <div class="skeleton-section skeleton-pulse">
+                                <div class="p-3">
+                                    <div class="skeleton-title"></div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 组合类型骨架 -->
+                            <div class="skeleton-section skeleton-pulse">
+                                <div class="p-3">
+                                    <div class="skeleton-title"></div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="skeleton-badge"></div>
+                                            <div class="skeleton-text"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 更多骨架 -->
+                            <div class="skeleton-section skeleton-pulse"></div>
+                            <div class="skeleton-section skeleton-pulse"></div>
+                        </div>
+                        
+                        <div id="stats-data" class="w-100 position-relative" style="display: none;">
+                            <!-- 统计数据将在这里显示 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 号码分析容器 -->
+                    <div id="analysis-container" class="table-responsive" style="display: none;">
+                        <div class="card border-primary mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <span class="lottery-title-main">号码分析</span>
+                                    </h5>
+                                    <div>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">统计期数</span>
+                                            <input type="number" id="analysis-period" class="form-control" value="200" min="50" max="1000">
+                                            <button id="analysis-refresh-btn" class="btn btn-outline-light header-main-btn">
+                                                <i class="bi bi-lightning"></i> 分析
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- 号码选择区域 -->
+                                <div class="number-selection-container mb-4">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h6 class="mb-2">选择分析号码</h6>
+                                        </div>
+                                    </div>
+                                    <div class="number-grid">
+                                        <!-- 号码按钮由JS生成 -->
+                                    </div>
+                                </div>
+                                
+                                <!-- 分析结果区域 -->
+                                <div id="analysis-loading" class="text-center p-3">
+                                    <i class="bi bi-hourglass-split"></i> 正在加载分析数据...
+                                </div>
+                                
+                                <div id="analysis-result" class="w-100" style="display: none;">
+                                    <!-- 分析概要信息 -->
+                                    <div class="analysis-summary mb-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-4 col-6 mb-3">
+                                                        <div class="analysis-summary-item">
+                                                            <label>最小间隔</label>
+                                                            <span id="analysis-min-interval" class="value">--</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-6 mb-3">
+                                                        <div class="analysis-summary-item">
+                                                            <label>最大间隔</label>
+                                                            <span id="analysis-max-interval" class="value">--</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 前后号码分析 -->
+                                    <div class="row mb-4">
+                                        <!-- 前号码统计 -->
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-header bg-primary text-white">
+                                                    <h6 class="card-title mb-0">出 <span id="before-number">--</span> 之前号码</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div id="before-numbers" class="freq-number-container">
+                                                        <!-- 由JS填充数据 -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 后号码统计 -->
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-header bg-primary text-white">
+                                                    <h6 class="card-title mb-0">出 <span id="after-number">--</span> 之后号码</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div id="after-numbers" class="freq-number-container">
+                                                        <!-- 由JS填充数据 -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 后续尾数和组合分析 -->
+                                    <div class="row mb-4">
+                                        <!-- 后续尾数统计 -->
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-header bg-primary text-white">
+                                                    <h6 class="card-title mb-0">出 <span id="after-tail-number">--</span> 之后尾数</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div id="after-tails" class="freq-number-container">
+                                                        <!-- 由JS填充数据 -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 后续组合统计 -->
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-header bg-primary text-white">
+                                                    <h6 class="card-title mb-0">出 <span id="after-combo-number">--</span> 之后组合</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div id="after-combos" class="freq-number-container">
+                                                        <!-- 由JS填充数据 -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                                                    <!-- 更新时间显示已移除 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分页部分 - 用于开奖记录、走势分析和遗漏数据 -->
+                <div id="pagination-container" class="mt-3">
+                    <nav aria-label="数据分页">
+                        <ul class="pagination justify-content-center">
+                            {% if current_page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link page-ajax-link" href="javascript:void(0)" data-page="{{ current_page - 1 }}">上一页</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0)">上一页</a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page in range(1, total_pages + 1) %}
+                                {% if page == current_page %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link page-ajax-link" href="javascript:void(0)" data-page="{{ page }}">{{ page }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if current_page < total_pages %}
+                            <li class="page-item">
+                                <a class="page-link page-ajax-link" href="javascript:void(0)" data-page="{{ current_page + 1 }}">下一页</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0)">下一页</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 侧边栏广告（独立行） -->
+    <div class="col-md-12">
+        <div data-ad-position="sidebar" style="display: none;"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.4/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lottery.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/lottery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-pagination.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-trend.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-countdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-missing.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-scratch.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lottery-analysis.js') }}"></script>
+{% endblock %} 

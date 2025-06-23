@@ -1,0 +1,128 @@
+/* 全局样式 */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* 设备模式样式 */
+body.pc-mode .mobile-only {
+    display: none !important;
+}
+
+body.mobile-mode .pc-only {
+    display: none !important;
+}
+
+body.mobile-mode {
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+body.mobile-mode .lottery-flex-container {
+    flex-direction: column !important;
+}
+
+body.mobile-mode .lottery-countdown-container,
+body.mobile-mode .lottery-result-container {
+    width: 100% !important;
+}
+
+/* 在移动端隐藏历史记录中的组合和形态列 */
+body.mobile-mode #lottery-table-container table th:nth-child(4),
+body.mobile-mode #lottery-table-container table th:nth-child(5),
+body.mobile-mode #lottery-table-container table td:nth-child(4),
+body.mobile-mode #lottery-table-container table td:nth-child(5) {
+    display: none !important;
+}
+
+/* 在移动端显示走势分析表格的所有列，支持横向滚动 */body.mobile-mode #trend-analysis-container {    overflow-x: auto;    -webkit-overflow-scrolling: touch;    position: relative;}
+
+/* 移动端下修改历史表格中的"暂无数据"列数 */
+body.mobile-mode #lottery-results tr td[colspan="5"] {
+    colspan: 3;
+}
+
+/* 设备切换按钮样式 */
+#toggle-device-mode {
+    border-radius: 4px;
+}
+
+body.mobile-mode #toggle-device-mode {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+body.mobile-mode .navbar-brand {
+    font-size: 1.1rem;
+}
+
+/* 表格样式 */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* 开奖结果突出显示 */
+.big {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.small {
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.odd {
+    color: #198754;
+    font-weight: bold;
+}
+
+.even {
+    color: #fd7e14;
+    font-weight: bold;
+}
+
+/* 卡片样式 */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 0.25rem;
+}
+
+/* 分页样式 */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #0d6efd;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+} 

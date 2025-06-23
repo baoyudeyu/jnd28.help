@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC28助手平台 - 遗漏 - 遗漏</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+<style>
+    .missing-info {
+        margin-bottom: 20px;
+    }
+    .missing-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .missing-table td, .missing-table th {
+        text-align: center;
+        padding: 10px;
+    }
+    .missing-type {
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-weight: bold;
+        min-width: 40px;
+        display: inline-block;
+    }
+    .missing-value {
+        font-weight: bold;
+        padding: 4px 10px;
+        min-width: 80px;
+    }
+    .refresh-container {
+        margin-bottom: 15px;
+    }
+    .auto-refresh {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+    .auto-refresh label {
+        margin-right: 10px;
+        margin-bottom: 0;
+    }
+    .data-source {
+        font-size: 12px;
+        color: #6c757d;
+        text-align: right;
+        margin-bottom: 10px;
+    }
+    .data-source .badge {
+        margin-left: 5px;
+    }
+    .badge-fresh {
+        background-color: #28a745;
+    }
+    .badge-old {
+        background-color: #ffc107;
+        color: #212529;
+    }
+</style>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">PC28助手平台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="/"><i class="bi bi-house-door"></i> 首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/history"><i class="bi bi-clock-history"></i> 历史记录</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/missing"><i class="bi bi-search"></i> 遗漏</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        
+<div class="row">
+    <!-- 最新开奖结果 -->
+    
+    <div class="col-md-12 mb-4">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">最新开奖 - 第<span id="latest-qihao">3288385</span>期</h5>
+                    <button id="refresh-btn" class="btn btn-sm btn-outline-light">
+                        <i class="bi bi-arrow-clockwise"></i> 刷新数据
+                    </button>
+                </div>
+                
+                <!-- 倒计时显示 - 独立区域 -->
+                
+                <div class="countdown-banner bg-warning text-dark p-2 text-center fw-bold">
+                    <div class="countdown-container">
+                        <span class="me-2">下一期倒计时:</span>
+                        <div id="countdown" class="countdown d-inline-block" data-last-draw-time="05-21 07:51:30" data-lottery-interval="210">
+                            <span id="countdown-status">计算中...</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="card-body">
+                <!-- 重新设计的开奖信息显示 -->
+                <div id="latest-lottery-info" class="lottery-info">
+                    <div class="lottery-row">
+                        <div class="lottery-numbers">
+                            
+                            
+                                <span class="lottery-number">1</span>
+                                <span class="lottery-operator">+</span>
+                            
+                                <span class="lottery-number">2</span>
+                                <span class="lottery-operator">+</span>
+                            
+                                <span class="lottery-number">6</span>
+                                
+                            
+                            <span class="lottery-operator">=</span>
+                            <span class="lottery-sum">9</span>
+                        </div>
+                        <div class="lottery-result">
+                            <div class="lottery-result-item small">小</div>
+                            <div class="lottery-result-item odd">单</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- 遗漏查询表格 -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <a href="/" class="btn btn-sm btn-outline-light me-2">
+                            <i class="bi bi-list-ol"></i> 历史
+                        </a>
+                        <a href="/" class="btn btn-sm btn-outline-light me-2">
+                            <i class="bi bi-graph-up"></i> 走势
+                        </a>
+                        <button class="btn btn-sm btn-outline-light active">
+                            <i class="bi bi-search"></i> 遗漏
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 自动刷新控制 -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="data-source">
+                        数据状态: 
+                        <span id="data-status" class="badge badge-fresh">
+                            实时数据
+                        </span>
+                        <span id="data-timestamp"></span>
+                    </div>
+                    <div class="auto-refresh">
+                        <label for="auto-refresh-toggle">
+                            <input type="checkbox" id="auto-refresh-toggle" checked> 自动刷新数据
+                        </label>
+                        <span id="refresh-countdown" class="badge bg-secondary">30s</span>
+                    </div>
+                </div>
+                
+                <!-- 遗漏查询主要内容 -->
+                <div id="missing-container" class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" width="25%">类型</th>
+                                <th class="text-center" width="25%">未开期数</th>
+                                <th class="text-center" width="25%">类型</th>
+                                <th class="text-center" width="25%">未开期数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="missing-data">
+                            
+                                <!-- 基本类型（大小单双）遗漏 -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #3498db;">大</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (0) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #2ecc71;">小</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (1) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e74c3c;">单</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (0) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #9b59b6;">双</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (4) 期数</span></td>
+                                </tr>
+                                
+                                <!-- 组合类型遗漏 -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #f39c12;">大单</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (0) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #16a085;">大双</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (4) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #d35400;">小单</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (1) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #8e44ad;">小双</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (5) 期数</span></td>
+                                </tr>
+                                
+                                <!-- 极值遗漏 -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e74c3c;">极大</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (4) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #3498db;">极小</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (31) 期数</span></td>
+                                </tr>
+                                
+                                <!-- 形态遗漏 -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #9c27b0;">豹子</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (83) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #4caf50;">顺子</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (20) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ff9800;">对子</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (2) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">杂六</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (0) 期数</span></td>
+                                </tr>
+                                
+                                <!-- 和值遗漏（部分展示，0-13） -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值0</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (83) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值1</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (43) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值2</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (371) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值3</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (31) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值4</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (114) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值5</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (58) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值6</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (131) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值7</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (11) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值8</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (51) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #607d8b;">和值9</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (2) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值10</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (5) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值11</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (9) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值12</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (35) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值13</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (1) 期数</span></td>
+                                </tr>
+                                
+                                <!-- 和值遗漏（14-27，根据需要可以展示更多） -->
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值14</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (13) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值15</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (3) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值16</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (14) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #ffeb3b; color: #333;">和值17</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (8) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #f44336;">和值18</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (56) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #f44336;">和值19</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (0) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #f44336;">和值20</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (15) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #f44336;">和值21</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (30) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值22</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (4) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值23</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (12) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值24</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (20) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值25</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (82) 期数</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值26</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (501) 期数</span></td>
+                                    <td class="text-center"><span class="missing-type" style="background-color: #e91e63;">和值27</span></td>
+                                    <td class="text-center"><span class="missing-value">未开 (1215) 期数</span></td>
+                                </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">PC28助手平台 v0.2.0 &copy; 2025</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    
+<script>
+    $(document).ready(function() {
+        // 自动刷新相关变量
+        let autoRefresh = true;
+        let refreshInterval = 30; // 30秒刷新一次
+        let refreshCountdown = refreshInterval;
+        let refreshTimer;
+        let currentTimestamp = new Date().toLocaleString();
+        
+        // 初始化时间戳显示
+        $('#data-timestamp').text('更新时间: ' + currentTimestamp);
+        
+        // 更新自动刷新倒计时
+        function updateRefreshCountdown() {
+            if (autoRefresh) {
+                $('#refresh-countdown').text(refreshCountdown + 's');
+                refreshCountdown--;
+                
+                if (refreshCountdown < 0) {
+                    refreshCountdown = refreshInterval;
+                    fetchMissingData(false); // 普通刷新，优先从数据库获取
+                }
+                
+                refreshTimer = setTimeout(updateRefreshCountdown, 1000);
+            } else {
+                $('#refresh-countdown').text('已关闭');
+            }
+        }
+        
+        // 切换自动刷新
+        $('#auto-refresh-toggle').change(function() {
+            autoRefresh = $(this).prop('checked');
+            
+            if (autoRefresh) {
+                refreshCountdown = refreshInterval;
+                updateRefreshCountdown();
+            } else {
+                clearTimeout(refreshTimer);
+                $('#refresh-countdown').text('已关闭');
+            }
+        });
+        
+        // 获取遗漏数据
+        function fetchMissingData(forceApi = false) {
+            $('#refresh-btn').prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> 刷新中...');
+            
+            $.ajax({
+                url: '/api/missing' + (forceApi ? '?force=1' : ''),
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        updateMissingData(response.data);
+                        updateDataStatus(response.is_fresh, response.timestamp);
+                    } else {
+                        console.error('获取遗漏数据失败:', response.message);
+                    }
+                    $('#refresh-btn').prop('disabled', false).html('<i class="bi bi-arrow-clockwise"></i> 刷新数据');
+                },
+                error: function(xhr, status, error) {
+                    console.error('API请求失败:', error);
+                    $('#refresh-btn').prop('disabled', false).html('<i class="bi bi-arrow-clockwise"></i> 刷新数据');
+                }
+            });
+        }
+        
+        // 更新数据状态显示
+        function updateDataStatus(isFresh, timestamp) {
+            if (isFresh) {
+                $('#data-status').removeClass('badge-old').addClass('badge-fresh').text('实时数据');
+            } else {
+                $('#data-status').removeClass('badge-fresh').addClass('badge-old').text('缓存数据');
+            }
+            
+            if (timestamp) {
+                currentTimestamp = timestamp;
+                $('#data-timestamp').text('更新时间: ' + timestamp);
+            }
+        }
+        
+        // 更新遗漏数据表格
+        function updateMissingData(data) {
+            // 保存遗漏数据更新到表格中
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    // 查找对应的单元格并更新
+                    let selector;
+                    // 处理不同类型的key
+                    if (key.startsWith('s') && key.length > 1) {
+                        // 和值类型 (s0, s1, ...)
+                        let valueNum = key.substring(1);
+                        selector = `.missing-type:contains("和值${valueNum}")`;
+                    } else {
+                        // 其他类型 (大小单双等)
+                        const keyMap = {
+                            'da': '大', 'xiao': '小', 'dan': '单', 'shuang': '双',
+                            'dd': '大单', 'ds': '大双', 'xd': '小单', 'xs': '小双',
+                            'jd': '极大', 'jx': '极小', 'bz': '豹子', 'sz': '顺子', 'dz': '对子'
+                        };
+                        
+                        if (keyMap[key]) {
+                            selector = `.missing-type:contains("${keyMap[key]}")`;
+                        }
+                    }
+                    
+                    if (selector) {
+                        const typeCell = $(selector).closest('td');
+                        if (typeCell.length > 0) {
+                            const valueCell = typeCell.next('td');
+                            if (valueCell.length > 0) {
+                                valueCell.html(`<span class="missing-value">未开 (${data[key]}) 期数</span>`);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 同步遗漏数据（强制从API获取最新数据并保存到数据库）
+        function syncMissingData() {
+            $('#refresh-btn').prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> 同步中...');
+            
+            $.ajax({
+                url: '/api/missing/sync',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // 同步成功后获取最新数据
+                        fetchMissingData(false);
+                    } else {
+                        console.error('同步遗漏数据失败:', response.message);
+                        $('#refresh-btn').prop('disabled', false).html('<i class="bi bi-arrow-clockwise"></i> 刷新数据');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('同步API请求失败:', error);
+                    $('#refresh-btn').prop('disabled', false).html('<i class="bi bi-arrow-clockwise"></i> 刷新数据');
+                }
+            });
+        }
+        
+        // 刷新按钮点击事件 - 强制同步数据
+        $('#refresh-btn').click(function() {
+            syncMissingData();
+            refreshCountdown = refreshInterval;
+        });
+        
+        // 启动自动刷新倒计时
+        updateRefreshCountdown();
+    });
+</script>
+
+</body>
+</html> 

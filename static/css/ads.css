@@ -1,0 +1,380 @@
+/* 广告容器基础样式 */
+.ad-container {
+    margin: 15px 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.ad-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* 广告图片样式 */
+.ad-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.ad-container:hover .ad-image {
+    transform: scale(1.02);
+}
+
+/* 广告链接样式 */
+.ad-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.ad-link::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s ease;
+}
+
+.ad-link:hover::after {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* 不同位置的广告样式 */
+
+/* 顶部横幅广告 */
+.ad-position-top {
+    margin: 20px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.ad-position-top .ad-image {
+    width: 100%;
+    height: auto;
+    min-height: 80px;
+    max-height: none;
+    object-fit: contain;
+}
+
+/* 侧边栏广告（现在作为独立行显示） */
+.ad-position-sidebar {
+    margin: 15px auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    max-width: 400px;
+    text-align: center;
+}
+
+.ad-position-sidebar .ad-image {
+    max-height: 200px;
+}
+
+/* 内容区域广告 */
+.ad-position-content {
+    margin: 25px 0;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 2px solid #e3f2fd;
+    border-radius: 12px;
+}
+
+.ad-position-content .ad-image {
+    max-height: 250px;
+}
+
+/* 底部横幅广告 */
+.ad-position-bottom {
+    margin: 20px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.ad-position-bottom .ad-image {
+    max-height: 120px;
+    object-fit: cover;
+}
+
+/* 广告标题（悬停时显示） */
+.ad-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 20px 15px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.ad-container:hover .ad-title {
+    opacity: 1;
+}
+
+/* 外链标识 */
+.ad-external-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ad-container:hover .ad-external-icon {
+    opacity: 1;
+}
+
+/* 加载状态 */
+.ad-loading {
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.ad-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dee2e6;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 错误状态 */
+.ad-error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+/* 响应式设计 */
+
+/* 平板设备 */
+@media (max-width: 992px) {
+    .ad-position-top .ad-image,
+    .ad-position-bottom .ad-image {
+        max-height: 120px;
+    }
+    
+    .ad-position-sidebar .ad-image {
+        max-height: 150px;
+    }
+    
+    .ad-position-content .ad-image {
+        max-height: 200px;
+    }
+    
+    .ad-title {
+        font-size: 13px;
+        padding: 15px 10px 8px;
+    }
+}
+
+/* 手机设备 */
+@media (max-width: 768px) {
+    .ad-container {
+        margin: 10px 0;
+        border-radius: 6px;
+    }
+    
+    .ad-position-top .ad-image,
+    .ad-position-bottom .ad-image {
+        max-height: 100px;
+    }
+    
+    .ad-position-sidebar .ad-image {
+        max-height: 120px;
+    }
+    
+    .ad-position-content .ad-image {
+        max-height: 150px;
+    }
+    
+    .ad-title {
+        font-size: 12px;
+        padding: 12px 8px 6px;
+    }
+    
+    .ad-external-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        top: 8px;
+        right: 8px;
+    }
+}
+
+/* 小屏手机 */
+@media (max-width: 576px) {
+    .ad-position-top .ad-image,
+    .ad-position-bottom .ad-image {
+        max-height: 80px;
+    }
+    
+    .ad-position-sidebar .ad-image,
+    .ad-position-content .ad-image {
+        max-height: 100px;
+    }
+    
+    .ad-container {
+        margin: 8px 0;
+    }
+}
+
+/* 图片加载失败时的样式 */
+.ad-image-fallback {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    color: #6c757d;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+
+.ad-image-fallback::before {
+    content: '🖼️';
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* 广告管理后台样式 */
+.ads-admin-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.ads-admin-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.ads-admin-content {
+    padding: 20px;
+}
+
+.ad-form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.ad-preview {
+    border: 2px dashed #dee2e6;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-list-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.ad-list-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.ad-list-image {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.ad-status-enabled {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.ad-status-disabled {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.position-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.position-badge.top {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.position-badge.sidebar {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.position-badge.content {
+    background: #e8f5e8;
+    color: #388e3c;
+}
+
+.position-badge.bottom {
+    background: #fff3e0;
+    color: #f57c00;
+} 

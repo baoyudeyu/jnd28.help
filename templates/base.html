@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="google-site-verification" content="rWniOI2PlxivJSDvUCVjhh-zmOl5abqBQbuL8Vs3tO8" />
+    <meta name="baidu-site-verification" content="codeva-yV4xwO4n85" />
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <meta name="description" content="{{ config.SITE_CONFIG.description }}">
+    <meta name="keywords" content="{{ config.SITE_CONFIG.keywords }}">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    {% block extra_css %}{% endblock %}
+    
+    <!-- 51LA挂载信息样式 -->
+    <style>
+        .la-widget-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .la-widget-container:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        /* 51LA挂载信息内部样式优化 */
+        .la-widget-container iframe {
+            border-radius: 4px;
+            max-width: 100%;
+        }
+        .la-widget-container div {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+    </style>
+    
+    <!-- 广告样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ads.css') }}">
+    
+    <!-- 自定义HTML代码 - 页面头部 -->
+    {% if config.SITE_CONFIG.custom_html.enabled and config.SITE_CONFIG.custom_html.head_code %}
+    {{ config.SITE_CONFIG.custom_html.head_code | safe_html }}
+    {% endif %}
+</head>
+<body class="pc-mode" id="app-body">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">{{ config.SITE_CONFIG.title }}</a>
+            
+            <!-- 导航栏右侧按钮组 -->
+            <div class="navbar-nav-buttons d-flex align-items-center">
+                <button id="refresh-btn" class="btn btn-outline-light me-2 navbar-refresh-btn" title="刷新开奖数据">
+                    <i class="bi bi-arrow-clockwise"></i> <span class="refresh-btn-text">刷新开奖</span>
+                </button>
+                <button id="toggle-device-mode" class="btn btn-outline-light" type="button" title="点击切换设备模式，双击重置为自动检测">
+                    <i class="bi bi-display"></i> <span id="device-mode-text">切换到移动端</span>
+                </button>
+            </div>
+            
+            <!-- 移动端导航切换按钮 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- 移动端下拉菜单（如果以后需要添加其他功能） -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- 预留空间，以后可以添加其他导航项 -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 顶部广告区域 -->
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12">
+                <div data-ad-position="top" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- 底部广告区域 -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div data-ad-position="bottom" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 51LA挂载信息显示区域 -->
+    {% if config.SITE_CONFIG.custom_html.enabled and config.SITE_CONFIG.custom_html.footer_code %}
+    <div class="container mt-4 mb-3">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="la-widget-container p-3 bg-light rounded">
+                    <!-- 加载占位符 -->
+                    <div id="la-widget-placeholder" class="text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        正在加载统计信息...
+                    </div>
+                    <!-- 51LA挂载信息将在这里异步加载 -->
+                    <div id="la-widget-content" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">{{ config.SITE_CONFIG.copyright }}</span>
+            {% if config.SITE_CONFIG.beian %}
+            <br><span class="text-muted">{{ config.SITE_CONFIG.beian }}</span>
+            {% endif %}
+        </div>
+    </footer>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- 51LA优化加载器 -->
+    {% if config.SITE_CONFIG.custom_html.enabled and (config.SITE_CONFIG.custom_html.la51_code or config.SITE_CONFIG.custom_html.footer_code) %}
+    <script src="{{ url_for('static', filename='js/la-optimizer.js') }}" async></script>
+    {% endif %}
+    
+    <!-- 广告显示脚本 -->
+    <script src="{{ url_for('static', filename='js/ads-display.js') }}" async></script>
+    
+    <!-- 性能监控脚本（开发环境） -->
+    {% if config.DEBUG %}
+    <script src="{{ url_for('static', filename='js/performance-monitor.js') }}" async></script>
+    {% endif %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 
