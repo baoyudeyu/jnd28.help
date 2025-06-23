@@ -116,10 +116,19 @@ handler.setFormatter(logging.Formatter(
 handler.setLevel(logging.getLevelName(config.LOG_LEVEL))
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.getLevelName(config.LOG_LEVEL))
+
+# 禁用Werkzeug的HTTP请求日志输出
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+
 app.logger.info(f'{config.APP_NAME} 启动')
 
-# 启动调度器
-scheduler.start()
+# 检查是否需要启动调度器（根据配置决定）
+if config.ENABLE_SCHEDULER:
+    # 启动调度器
+    scheduler.start()
+    app.logger.info("数据调度器已启动")
+else:
+    app.logger.info("调度器已禁用，使用手动刷新模式")
 
 # 初始化形态分析
 initialize_pattern_analysis()
@@ -174,7 +183,13 @@ def home():
     app.logger.info(f"获取到 {len(lottery_results)} 条开奖记录，页码：{page}/{total_pages}")
     
     # 获取调度器状态
-    scheduler_status = scheduler.get_status()
+    scheduler_status = scheduler.get_status() if config.ENABLE_SCHEDULER else {
+        'is_running': False,
+        'last_update': None,
+        'total_records': total_count,
+        'update_interval': config.DATA_UPDATE_INTERVAL,
+        'mode': 'manual'
+    }
     
     return render_template(
         'index.html', 
@@ -251,11 +266,19 @@ def api_refresh():
 # API状态
 @app.route('/api/status')
 def api_status():
+    scheduler_status = scheduler.get_status() if config.ENABLE_SCHEDULER else {
+        'is_running': False,
+        'last_update': None,
+        'total_records': db_manager.count_lottery_results(),
+        'update_interval': config.DATA_UPDATE_INTERVAL,
+        'mode': 'manual'
+    }
+    
     return jsonify({
         'status': 'online',
         'app_name': config.APP_NAME,
         'version': config.APP_VERSION,
-        'scheduler': scheduler.get_status()
+        'scheduler': scheduler_status
     })
 
 # 添加历史记录路由
@@ -881,7 +904,8 @@ def internal_error(error):
 # 应用退出时的清理工作
 @app.teardown_appcontext
 def shutdown_scheduler(exception=None):
-    scheduler.stop()
+    if config.ENABLE_SCHEDULER:
+        scheduler.stop()
 
 # 管理员路由 - 登录页面
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -1228,5 +1252,4 @@ def api_get_ads(position):
 
 # 启动应用
 if __name__ == '__main__':
-    # 注意：Flask 2.3 使用了新的run参数
-    app.run(debug=config.DEBUG, host='0.0.0.0', port=5000, use_reloader=True) 
+    app.run(debug=False, host='0.0.0.0', port=5000, use_reloader=False) 

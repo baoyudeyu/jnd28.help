@@ -1,90 +1,70 @@
 @echo off
 chcp 65001 >nul
 echo ==========================================
-echo          一键部署到GitHub仓库
+echo          Deploy to GitHub Repository
 echo ==========================================
 echo.
 
-:: 设置仓库URL和用户信息
+:: Set repository URL
 set REPO_URL=https://github.com/baoyudeyu/jnd28.help.git
-set USERNAME=baoyudeyu
-set EMAIL=69718491@qq.com
 
-:: 检查并配置Git用户信息
-echo [信息] 检查Git用户配置...
-git config --global user.name >nul 2>&1
-if errorlevel 1 (
-    echo [信息] 配置Git用户信息...
-    git config --global user.name "%USERNAME%"
-    git config --global user.email "%EMAIL%"
-    git config --global init.defaultBranch main
-    git config --global core.autocrlf true
-) else (
-    for /f "tokens=*" %%i in ('git config --global user.name') do set CURRENT_USER=%%i
-    if not "!CURRENT_USER!"=="%USERNAME%" (
-        echo [信息] 更新Git用户信息为: %USERNAME%
-        git config --global user.name "%USERNAME%"
-        git config --global user.email "%EMAIL%"
-    )
-)
-
-:: 检查是否已经初始化git仓库
+:: Check if git repository is initialized
 if not exist ".git" (
-    echo [信息] 初始化Git仓库...
+    echo [INFO] Initializing Git repository...
     git init
     if errorlevel 1 (
-        echo [错误] Git初始化失败，请检查Git是否已安装
+        echo [ERROR] Git initialization failed, please check if Git is installed
         pause
         exit /b 1
     )
 )
 
-:: 检查是否已添加远程仓库
+:: Check if remote repository is added
 git remote get-url origin >nul 2>&1
 if errorlevel 1 (
-    echo [信息] 添加远程仓库...
+    echo [INFO] Adding remote repository...
     git remote add origin %REPO_URL%
 ) else (
-    echo [信息] 更新远程仓库地址...
+    echo [INFO] Updating remote repository URL...
     git remote set-url origin %REPO_URL%
 )
 
-:: 检查当前分支
+:: Check current branch
 for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set CURRENT_BRANCH=%%i
 if "%CURRENT_BRANCH%"=="" (
-    echo [信息] 创建并切换到main分支...
+    echo [INFO] Creating and switching to main branch...
     git checkout -b main
 )
 
-:: 添加所有文件到暂存区
-echo [信息] 添加文件到暂存区...
+:: Add all files to staging area
+echo [INFO] Adding files to staging area...
 git add .
 
-:: 检查是否有文件需要提交
+:: Check if there are files to commit
 git diff --cached --quiet
 if not errorlevel 1 (
-    echo [警告] 没有检测到需要提交的更改
-    echo [信息] 尝试强制推送当前状态...
+    echo [WARNING] No changes detected for commit
+    echo [INFO] Attempting force push current state...
 ) else (
-    echo [信息] 提交更改...
-    git commit -m "自动部署: %date% %time%"
+    echo [INFO] Committing changes...
+    git commit -m "Auto deploy: %date% %time%"
 )
 
-:: 推送到远程仓库
-echo [信息] 推送到GitHub仓库...
+:: Push to remote repository
+echo [INFO] Pushing to GitHub repository...
 git push -u origin main --force
 
 if errorlevel 1 (
     echo.
-    echo [错误] 推送失败，可能的原因：
-    echo 1. 网络连接问题
-    echo 2. 仓库权限问题
-    echo 3. Git认证问题
+    echo [ERROR] Push failed, possible reasons:
+    echo 1. Network connection issues
+    echo 2. Repository permission issues
+    echo 3. Git authentication issues
     echo.
-    echo [建议] 请检查：
-    echo - GitHub仓库是否存在且有写入权限
-    echo - Git是否已配置用户名和邮箱
-    echo - 是否需要配置SSH密钥或个人访问令牌
+    echo [SUGGESTION] Please check:
+    echo - GitHub repository exists and has write permission
+    echo - Git username and email are configured
+    echo - SSH key or personal access token configured
     echo.
     pause
     exit /b 1
@@ -92,11 +72,11 @@ if errorlevel 1 (
 
 echo.
 echo ==========================================
-echo          部署成功！
+echo          Deploy Success!
 echo ==========================================
-echo 仓库地址: %REPO_URL%
-echo 部署时间: %date% %time%
+echo Repository URL: %REPO_URL%
+echo Deploy Time: %date% %time%
 echo ==========================================
 echo.
 
-pause 
+pause

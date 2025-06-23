@@ -7,7 +7,7 @@ PYTHON_VERSION = platform.python_version()
 FLASK_VERSION = '2.3.3'
 
 # 调试模式
-DEBUG = True
+DEBUG = False
 
 # 密钥配置
 SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-for-pc28-platform'
@@ -47,6 +47,7 @@ MISSING_API_TIMEOUT = 10  # 遗漏查询API超时时间（秒）
 # 数据更新配置
 DATA_UPDATE_INTERVAL = 1  # 数据更新间隔（秒）
 DATA_RETENTION_DAYS = 30   # 数据保留天数 
+ENABLE_SCHEDULER = False  # 是否启用调度器（True=自动获取数据，False=手动刷新模式）
 
 # PC28形态和类型判断配置
 # 基本形态判断规则（对子、顺子、豹子、杂六）
