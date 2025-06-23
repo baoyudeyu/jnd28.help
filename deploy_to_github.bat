@@ -5,8 +5,28 @@ echo          一键部署到GitHub仓库
 echo ==========================================
 echo.
 
-:: 设置仓库URL
+:: 设置仓库URL和用户信息
 set REPO_URL=https://github.com/baoyudeyu/jnd28.help.git
+set USERNAME=baoyudeyu
+set EMAIL=69718491@qq.com
+
+:: 检查并配置Git用户信息
+echo [信息] 检查Git用户配置...
+git config --global user.name >nul 2>&1
+if errorlevel 1 (
+    echo [信息] 配置Git用户信息...
+    git config --global user.name "%USERNAME%"
+    git config --global user.email "%EMAIL%"
+    git config --global init.defaultBranch main
+    git config --global core.autocrlf true
+) else (
+    for /f "tokens=*" %%i in ('git config --global user.name') do set CURRENT_USER=%%i
+    if not "!CURRENT_USER!"=="%USERNAME%" (
+        echo [信息] 更新Git用户信息为: %USERNAME%
+        git config --global user.name "%USERNAME%"
+        git config --global user.email "%EMAIL%"
+    )
+)
 
 :: 检查是否已经初始化git仓库
 if not exist ".git" (
